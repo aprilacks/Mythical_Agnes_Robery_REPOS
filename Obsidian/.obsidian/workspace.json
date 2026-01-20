@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Prueba.md",
+                "file": "Historia/Prueba.md",
                 "mode": "source",
                 "source": false
               },
@@ -180,9 +180,9 @@
       "bases:Crear nueva base": false
     }
   },
-  "active": "3b947915f93f376e",
+  "active": "dae7173155ce932d",
   "lastOpenFiles": [
-    "Prueba.md",
+    "Historia/Prueba.md",
     "Magias",
     "Personajes",
     "Niveles",

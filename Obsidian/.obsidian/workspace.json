@@ -11,14 +11,12 @@
             "id": "42ad77d010996eed",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "image",
               "state": {
-                "file": "Mecánicas/Detectar Enemigos (Pol_Provisional).md",
-                "mode": "source",
-                "source": false
+                "file": "Pasted image 20260120110604.png"
               },
-              "icon": "lucide-file",
-              "title": "Detectar Enemigos (Pol_Provisional)"
+              "icon": "lucide-image",
+              "title": "Pasted image 20260120110604"
             }
           }
         ]
@@ -185,6 +183,12 @@
   },
   "active": "42ad77d010996eed",
   "lastOpenFiles": [
-    "Magias/Viento (Pol_Provisional).md"
+    "Personajes/Prueba5.md",
+    "Pasted image 20260120110604.png",
+    "Mecánicas/Detectar Enemigos (Pol_Provisional).md",
+    "Mecánicas/Movimiento Enemigos.md",
+    "Mecánicas/Movimiento Básico.md",
+    "Magias/Viento (Pol_Provisional).md",
+    "Mecánicas/Camara.md"
   ]
 }

@@ -239,7 +239,7 @@ GameObject:
   m_Component:
   - component: {fileID: 768252786}
   - component: {fileID: 768252785}
-  - component: {fileID: 768252784}
+  - component: {fileID: 768252787}
   m_Layer: 0
   m_Name: Guard_1
   m_TagString: Untagged
@@ -247,21 +247,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &768252784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 768252783}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87edaab1955afb8449baddcb472b2325, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Timer: 0
-  TimeLimit1: 1000
-  TimeLimit2: 500
 --- !u!212 &768252785
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -306,8 +291,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 8531a7b3e5a5e284f87e40e20037b25c, type: 3}
-  m_Color: {r: 0.2571274, g: 1, b: 0, a: 1}
+  m_Sprite: {fileID: 3576106466880498191, guid: e48c438909617244696e9d8878ac3a58, type: 3}
+  m_Color: {r: 0.5608184, g: 0.9924528, b: 0.41008896, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -327,11 +312,28 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -9, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &768252787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 768252783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87edaab1955afb8449baddcb472b2325, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Timer: 0
+  TimeLimit1: 1000
+  TimeLimit2: 500
+  Sprite1: {fileID: 3576106466880498191, guid: e48c438909617244696e9d8878ac3a58, type: 3}
+  Sprite2: {fileID: 8957324059118975939, guid: a0ec6f410ed18274da29b761dcaf2c25, type: 3}
 --- !u!1 &1217995902
 GameObject:
   m_ObjectHideFlags: 0

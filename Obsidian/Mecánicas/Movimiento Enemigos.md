@@ -1,5 +1,5 @@
 ***--ETAPA 1--*** *20/01/2026*
-El sistema de  movimiento de enemigos funcionara de la siguiente manera dependiendo de el tipo de enemigo:
+El sistema de  movimiento de enemigos funcionará de la siguiente manera dependiendo de el tipo de enemigo:
 
 .- El enemigo de color verde funcionara mediante un script que alterara el estado del personaje siendo estos despierto y dormido, el campo de visión se activara o desactivara dependiendo del estado en el que este el enemigo, el tiempo en el que pasa cada estado se podra canviar mediante el inspector.
 

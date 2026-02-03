@@ -468,7 +468,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1243286737}
-  - component: {fileID: 1243286739}
+  - component: {fileID: 1243286744}
+  - component: {fileID: 1243286743}
+  - component: {fileID: 1243286742}
+  - component: {fileID: 1243286741}
   - component: {fileID: 1243286735}
   - component: {fileID: 1243286733}
   - component: {fileID: 1243286738}
@@ -614,19 +617,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1}
   m_Direction: 0
---- !u!114 &1243286739
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1243286732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ac4d8fa19931484995bb4eeec57e086, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stats: {fileID: 11400000, guid: 212e975100e1dce47b148d73bea12710, type: 2}
 --- !u!114 &1243286740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -639,6 +629,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2e9d82df050c724e9ecbc756ed450f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1243286741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1243286732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85f1a1bfbb434b845b6e9b47684529f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agnes: {fileID: 1243286733}
+--- !u!114 &1243286742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1243286732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e0267c4fbcb3894e9cb255b9bab2c6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stats: {fileID: 11400000, guid: 94db11c9bf88a66478a24044ea3ab134, type: 2}
+  agnes: {fileID: 1243286733}
+  CannonSpeed: 60
+  CannonAcceleration: 400
+--- !u!114 &1243286743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1243286732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a62b90d5e34d984aab8767425bd17e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stats: {fileID: 11400000, guid: 94db11c9bf88a66478a24044ea3ab134, type: 2}
+  agnes: {fileID: 1243286733}
+--- !u!114 &1243286744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1243286732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70214b777113cfc40af116d9aebe19e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stats: {fileID: 11400000, guid: 94db11c9bf88a66478a24044ea3ab134, type: 2}
+  usingFireMagic: 0
+  usingWindMagic: 0
+  usingWaterMagic: 0
 --- !u!1 &1449147517
 GameObject:
   m_ObjectHideFlags: 0

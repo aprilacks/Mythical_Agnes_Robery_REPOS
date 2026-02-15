@@ -6,6 +6,7 @@ public class WindMagic : MonoBehaviour
     public Rigidbody2D agnes;
     private Movement plymov = null;
     public float fallspeed;
+    public float slowmo;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -20,12 +21,14 @@ public class WindMagic : MonoBehaviour
         {
              _stats.MaxFallSpeed = fallspeed;
               plymov.usingWindMagic = true;
+             _stats.MaxSpeed = slowmo;
             
         }
         else
         {
             _stats.MaxFallSpeed = 40;
             plymov.usingWindMagic = false;
+            _stats.MaxSpeed = 14;
         }
     }
 }

@@ -54,43 +54,27 @@ public class Movement : MonoBehaviour, IPlayerController
 
     private void GatherInput()
     {
-        if (!isHiding)
+        //the input collected on this exact frame
+        _frameInput = new FrameInput
         {
-            //the input collected on this exact frame
-            _frameInput = new FrameInput
-            {
-                //Checks if the jump is pressed or held
-                JumpDown = Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.C),
-                JumpHeld = Input.GetButton("Jump") || Input.GetKey(KeyCode.C),
-                //Checks if the player moved
-                Move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"))
-            };
-            //Makes all Floats turn to ints when it comes to movement to make turns instant, etc. 
-            if (_stats.SnapInput)
-            {
-                _frameInput.Move.x = Mathf.Abs(_frameInput.Move.x) < _stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_frameInput.Move.x);
-                _frameInput.Move.y = Mathf.Abs(_frameInput.Move.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_frameInput.Move.y);
-            }
-            //Checks if the player can Jump (this is about coyote time, dont touch this)
-            if (_frameInput.JumpDown)
-            {
-                _jumpToConsume = true;
-                _timeJumpWasPressed = _time;
-            }
-            if (Input.GetKey(KeyCode.H))
-            {
-                //Mirar si colisiono con un objeto en el que me permite esconderme
-                isHiding = true;
-            }
-        }
-        else
+            //Checks if the jump is pressed or held
+            JumpDown = Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.C),
+            JumpHeld = Input.GetButton("Jump") || Input.GetKey(KeyCode.C),
+            //Checks if the player moved
+            Move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"))
+        };
+        //Makes all Floats turn to ints when it comes to movement to make turns instant, etc. 
+        if (_stats.SnapInput)
         {
-            if (!Input.GetKey(KeyCode.H))
-            {
-                isHiding = false;
-            }
+            _frameInput.Move.x = Mathf.Abs(_frameInput.Move.x) < _stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_frameInput.Move.x);
+            _frameInput.Move.y = Mathf.Abs(_frameInput.Move.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_frameInput.Move.y);
         }
-        
+        //Checks if the player can Jump (this is about coyote time, dont touch this)
+        if (_frameInput.JumpDown)
+        {
+            _jumpToConsume = true;
+            _timeJumpWasPressed = _time;
+        }
     }
 
     private void FixedUpdate()

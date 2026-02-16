@@ -32,6 +32,8 @@ public class ElectricMagic : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.C) && markerPlaced)
         {
             TeleportToMarker();
+            plymov.isHiding = false;
+
         }
     }
 

@@ -3,7 +3,7 @@ using UnityEngine;
 public class CameraReference : MonoBehaviour
 {
     [Tooltip("Camera Script Object for Reference")]
-    public Camera_Controller_Structure_Temp cameraRef = null;
+    public Camera_Controller_Structure cameraRef = null;
 
     [Header("Camera")]
     public GameObject cam;
@@ -20,19 +20,12 @@ public class CameraReference : MonoBehaviour
         if (collided != null && cameraRef != null)
         {
             // If Game Object Tag is equal to the Bg Tag
-            if (collided.gameObject.tag == "ChangeCamera" 
-                || collided.gameObject.tag == "VerticalScroll" 
-                || collided.gameObject.tag == "HorizontalScroll")
+            if (collided.gameObject.tag == "ChangeCamera" || collided.gameObject.tag == "VerticalScroll" || collided.gameObject.tag == "HorizontalScroll")
             {
                 cameraRef.ColliderTarget = collided.gameObject;
                 enemy_move.RESET_ENEMIES();
 
             }
-
-            //else if(collided.gameObject.tag == "VerticalScroll")
-            //{
-            //    cameraRef.target = cameraRef.Player.gameObject;
-            //}
 
         }
     }

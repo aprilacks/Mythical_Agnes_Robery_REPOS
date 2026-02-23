@@ -23,7 +23,7 @@ public class Enemy_mov_TMP : MonoBehaviour
         }
 
     }
-
+    // USAR ESTE PEDAZO DE CÓDIGO EN TODOS LOS ENEMIGOS
     public void RESET_ENEMIES()
     {
         transform.position = initialPos;

@@ -11,7 +11,6 @@ public class Movement : MonoBehaviour, IPlayerController
     //Declaration of the player rigidbody and collider
     private Rigidbody2D _rb;
     private CapsuleCollider2D _col;
-    public bool isHiding = false;
     //Variables used to check for the input
     private FrameInput _frameInput;
     private Vector2 _frameVelocity;
@@ -20,6 +19,8 @@ public class Movement : MonoBehaviour, IPlayerController
     private Quaternion noRotate = new Quaternion(0, 0, 0, 0);
 
     //state check
+
+    public bool isHiding = false;
     public bool usingFireMagic = false;
     public bool usingWindMagic = false;
     public bool usingWaterMagic = false;
@@ -102,6 +103,15 @@ public class Movement : MonoBehaviour, IPlayerController
     public bool isGrounded()
     {
         return _grounded;
+    }
+
+
+    public bool _falling = false;
+    public bool isFalling()
+    {
+        _falling = !isGrounded() && _rb.linearVelocity.y < 0f;  
+
+        return _falling;
     }
 
     public void SetFrameVelocity(Vector2 velocity)

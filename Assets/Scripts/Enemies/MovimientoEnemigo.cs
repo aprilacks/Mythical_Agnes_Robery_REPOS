@@ -13,6 +13,7 @@ public class MovimientoEnemigo : MonoBehaviour
 
     #region Private Variables
     private Animator anim;
+    private float viewAngle;
     private int direction = 1;
     private SpriteRenderer spriteRenderer;
     #endregion
@@ -25,6 +26,7 @@ public class MovimientoEnemigo : MonoBehaviour
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        viewAngle = GetComponent<EnemyScript>().viewAngle;
     }
 
     // Update is called once per frame
@@ -55,5 +57,14 @@ public class MovimientoEnemigo : MonoBehaviour
     void Flip()
     {
         spriteRenderer.flipX = !spriteRenderer.flipX;
+        if (spriteRenderer.flipX)
+        {
+            GetComponent<EnemyScript>().fovRotation = 270;
+        }
+        else
+        {
+            GetComponent<EnemyScript>().fovRotation = 90;
+        }
+           
     }
 }

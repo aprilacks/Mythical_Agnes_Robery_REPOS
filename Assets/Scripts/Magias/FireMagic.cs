@@ -53,7 +53,7 @@ public class FireMagic : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Destructible"))
+        if (collision.gameObject.CompareTag("Destroyable") && plymov.usingFireMagic == true)
         {
             Destroy(collision.gameObject);
         }

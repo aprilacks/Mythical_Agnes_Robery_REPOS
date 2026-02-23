@@ -11,3 +11,6 @@ Agua: Se congela la posicion Y correctamente, lo cual permite al jugador reposic
 Electricidad: El jugador puede poner el objeto durante la caida, o puede volver a un punto mas alto incluso mientras cae con la magia activada. Activar la magia electrica no cancela la magia de fuego. 
 
 Viento: La magia de viento toma prioridad sobre la de fuego, pausando la caida del jugador mientras esta activa y permitiendo que este se suspenda en el aire. 
+
+***--ETAPA 1--*** *23/02/2026*
+Se ha actualizado el código inicial de manera que permita destruir los objetos marcados bajo el tag "Destruible".

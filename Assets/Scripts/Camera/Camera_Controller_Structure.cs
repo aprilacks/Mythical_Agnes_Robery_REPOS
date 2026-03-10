@@ -1,6 +1,4 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem.Processors;
 
 public class Camera_Controller_Structure : MonoBehaviour
 {    
@@ -22,6 +20,7 @@ public class Camera_Controller_Structure : MonoBehaviour
 
     [Tooltip("Camera's initial Position")]
     public Vector3 baseCamPosition = Vector3.zero;
+    Vector3 prevTarget = Vector3.zero;
     Vector3 FinalTarget;
 
     [Header("Movement Script for _grounded")]
@@ -37,16 +36,15 @@ public class Camera_Controller_Structure : MonoBehaviour
     public float sizeX;
     public float sizeY;
 
-
     void Start()
     {
         FinalTarget = Vector3.zero;
-
 
         // If target has an asigned Game object
         if (ColliderTarget != null)
         { 
             baseCamPosition = ColliderTarget.transform.position;
+            prevTarget = baseCamPosition;
             transform.position = baseCamPosition;
         }// Camera Initial Position = Target position
     }
@@ -57,35 +55,33 @@ public class Camera_Controller_Structure : MonoBehaviour
         // If target has an asigned Game object
         if (ColliderTarget != null || Player != null)
         {
-            if (ColliderTarget.gameObject == null) return; 
-            
+            if (ColliderTarget.gameObject == null) return;
+
             // STATIC CAMERA
             if (ColliderTarget.gameObject.CompareTag("ChangeCamera"))
             {
                 FinalTarget = ColliderTarget.transform.position;
                 // CAMERA MOVES TOWARDS OBJECTIVE
-               
+
                 baseCamPosition = Vector3.Lerp(baseCamPosition, FinalTarget + offset, speed * Time.deltaTime);
-               
+
             }
 
             // VERTICAL SCROLL
-            else if(ColliderTarget.gameObject.CompareTag("VerticalScroll"))
+            else if (ColliderTarget.gameObject.CompareTag("VerticalScroll"))
             {
 
-                FinalTarget = new Vector3 (ColliderTarget.transform.position.x, Player.transform.position.y);
+                FinalTarget = new Vector3(ColliderTarget.transform.position.x, Player.transform.position.y);
 
                 // LIMITS
                 if (maxX != -1 && maxY != -1 && minX != -1 && minY != -1)
                 {
                     aspectRatio = 1.78f;
-                    sizeX = CAMERA.orthographicSize/2;
+                    sizeX = CAMERA.orthographicSize / 2;
                     sizeY = sizeX * aspectRatio;
 
                     baseCamPosition.y = Mathf.Clamp(baseCamPosition.y, minY + sizeY, maxY - sizeY);
                 }
-
-
                 baseCamPosition = Vector3.Lerp(baseCamPosition, FinalTarget + offset, speed * Time.deltaTime);
 
             }
@@ -109,27 +105,37 @@ public class Camera_Controller_Structure : MonoBehaviour
                 FinalTarget = new Vector3(Player.transform.position.x, ColliderTarget.transform.position.y);
 
 
-                // CAMERA MOVES TOWARDS OBJECTIVE
-                baseCamPosition = Vector3.Lerp(baseCamPosition, FinalTarget +offset, speed * Time.deltaTime);
-
                 // LIMITS
                 if (maxX != -1 && maxY != -1 && minX != -1 && minY != -1)
                 {
-                    aspectRatio = 1.78f; 
+                    aspectRatio = 1.78f;
                     sizeY = CAMERA.orthographicSize;
                     sizeX = sizeY * aspectRatio;
 
-                    baseCamPosition.x = Mathf.Clamp(baseCamPosition.x, minX + sizeX, maxX - sizeX);
+                    //baseCamPosition.x = Mathf.Clamp(baseCamPosition.x, minX + sizeX, maxX - sizeX);
+
+                    if (FinalTarget.x < minX + sizeX)
+                    {
+                        FinalTarget.x = minX + sizeX;
+                        //baseCamPosition.x = minX + sizeX;
+
+                    }
+                    else if (FinalTarget.x > maxX - sizeX)
+                    {
+                        FinalTarget.x = maxX - sizeX;
+                        //baseCamPosition.x = maxX - sizeX;
+
+                    }
                 }
+                // CAMERA MOVES TOWARDS OBJECTIVE
+                baseCamPosition = Vector3.Lerp(baseCamPosition, FinalTarget + offset, speed * Time.deltaTime);
+                
             }
-
-
-
 
             // CAMERA LOCKS INTO THE OBJECTIVE
             // Makes a transition to the next Collided Object tagged by ChangeCamera [[ See CameraReference ]]
             transform.position = baseCamPosition;
-
+            prevTarget = FinalTarget;
         }
 
 

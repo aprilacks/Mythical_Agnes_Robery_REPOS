@@ -14,7 +14,7 @@ public class CameraReference : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collided)
     {
         cam = collided.gameObject;
-        /// transform.scale.x + transform.scale.x/2 - Tamaño de la Cámara en x (HACERLO EN TODOS LOS LADOS)
+       
 
 
         // If collition is detected and This object has a Camera Reference Game Object

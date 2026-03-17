@@ -97,21 +97,16 @@ public class Camera_Controller_Structure : MonoBehaviour
                 }
                 
                 if(_movement.isGrounded())
-                {
+                { // IF PLAYER IS IN THE GROUND, NO OFFSET AND FOLLOWS
                     offset.y = 0;
                     baseCamPosition = Vector3.Lerp(baseCamPosition, FinalTarget + offset, speed * Time.deltaTime);
                 }
                 else if(!_movement.isGrounded() && _movement._rb.linearVelocity.y < 0)
-                {
+                { // IF PLAYER IS FALLING, OFFSET OF -2 TO LOOK DOWN AND FOLLOWS
                     offset.y = -2;
                     baseCamPosition = Vector3.Lerp(baseCamPosition, FinalTarget + offset, speed * Time.deltaTime);
 
                 }
-
-
-
-
-
             }
 
             // HORIZONTAL SCROLL
@@ -127,8 +122,8 @@ public class Camera_Controller_Structure : MonoBehaviour
                     aspectRatio = 1.78f;
                     sizeY = CAMERA.orthographicSize;
                     sizeX = sizeY * aspectRatio;
-
-                    if(_movement._rb.linearVelocity.x <0)
+                    // OFFSET SETTERS
+                    if(_movement._rb.linearVelocity.x <0) 
                     {
                         offset.x = -2;
                     }
@@ -140,6 +135,7 @@ public class Camera_Controller_Structure : MonoBehaviour
                     {
                         offset.x = 0;
                     }
+                    // BOUNDARIES
                     if (FinalTarget.x < minX + sizeX+offset.x - offset.x*3)
                     {
                         offset.x = 0;
@@ -154,6 +150,7 @@ public class Camera_Controller_Structure : MonoBehaviour
 
                     }
                 }
+
                 // CAMERA MOVES TOWARDS OBJECTIVE
                 baseCamPosition = Vector3.Lerp(baseCamPosition, FinalTarget + offset, speed * Time.deltaTime);
 

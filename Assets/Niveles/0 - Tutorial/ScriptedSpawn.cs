@@ -1,16 +1,24 @@
 using UnityEngine;
 
-public class ScriptedSpawn : MonoBehaviour
+public class ScriptedSpawn : MovimientoEnemigo
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public GameObject Enemy;
+    private GameObject clone;
+    private float timer;
+    private bool guardSpawned = true;
+    private MovimientoEnemigo movEnemy;
 
-    // Update is called once per frame
-    void Update()
+
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if (guardSpawned)
+        {
+            clone = Instantiate(Enemy, this.transform.position, this.transform.rotation);
+            movEnemy = clone.GetComponent<MovimientoEnemigo>();
+            movEnemy.leftLimit = transform.position .x - 100f;
+            movEnemy.rightLimit = transform.position.x;
+            Destroy(clone, 10f);
+            guardSpawned = false;
+        }
     }
 }

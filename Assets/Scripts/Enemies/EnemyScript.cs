@@ -1,39 +1,36 @@
-/* * HOW TO USE:
- * 1. Attach to Enemy. Assign a child MeshFilter to 'viewMeshFilter'.
- * 2. Set 'targetMask' (Player) and 'obstacleMask' (Walls/Terrain).
- * 3. IMPORTANT: Every Room Prefab must have a child named "EntranceSpawnPoint".
- */
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyScript : MonoBehaviour
 {
-    public float viewRadius;
-    [Range(0, 360)] public float viewAngle;
-    [Range(0, 360)] public float fovRotation;
+    [Header("Detection Settings")]
+    public float viewRadius = 5f;
+    [Range(0, 360)] public float viewAngle = 90f;
+    [Range(0, 360)] public float fovRotation = 90f;
 
+    [Header("Physics Layers")]
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
-    [HideInInspector] public List<Transform> visibleTargets = new List<Transform>();
-
-    public float meshResolution;
-    public int edgeResolveIterations;
-    public float edgeDstThreshold;
-
+    [Header("Visual Mesh")]
     public MeshFilter viewMeshFilter;
     private Mesh viewMesh;
+    public float meshResolution = 1f;
+    public int edgeResolveIterations = 4;
+    public float edgeDstThreshold = 0.5f;
 
-    public bool targetAquired = false;
+    // RESTORED FOR THE EDITOR SCRIPT
+    [HideInInspector]
+    public List<Transform> visibleTargets = new List<Transform>();
 
     void Start()
     {
         viewMesh = new Mesh();
         viewMesh.name = "View Mesh";
-        viewMeshFilter.mesh = viewMesh;
-        StartCoroutine("FindTargetsWithDelay", 0.05f);
+        if (viewMeshFilter != null) viewMeshFilter.mesh = viewMesh;
+
+        StartCoroutine("FindTargetsWithDelay", 0.1f);
     }
 
     IEnumerator FindTargetsWithDelay(float delay)
@@ -50,80 +47,64 @@ public class EnemyScript : MonoBehaviour
     void FindVisibleTargets()
     {
         visibleTargets.Clear();
-        targetAquired = false;
 
-        Collider2D[] targetsInViewRadius = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y), viewRadius, targetMask);
+        // 1. Find the player using a circular overlap
+        Collider2D[] targetsInViewRadius = Physics2D.OverlapCircleAll(transform.position, viewRadius, targetMask);
 
-        for (int i = 0; i < targetsInViewRadius.Length; i++)
+        foreach (Collider2D targetCollider in targetsInViewRadius)
         {
-            Transform target = targetsInViewRadius[i].transform;
-            GameObject targetObject = target.gameObject;
-            if (targetObject == null) { continue; }
-
+            Transform target = targetCollider.transform;
             Vector2 dirToTarget = (target.position - transform.position).normalized;
 
-            // Math for view cone check
+            // 2. Angle Check (Is the player in the "slice of pie"?)
             if (Vector2.Angle(new Vector2(Mathf.Sin(fovRotation * Mathf.Deg2Rad), Mathf.Cos(fovRotation * Mathf.Deg2Rad)), dirToTarget) < viewAngle / 2)
             {
                 float dstToTarget = Vector3.Distance(transform.position, target.position);
 
-                // Raycast check for walls
-                if (!Physics2D.Raycast(transform.position, dirToTarget, dstToTarget, obstacleMask))
+                // 3. RaycastAll to look "through" the enemy's own body
+                RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, dirToTarget, dstToTarget, obstacleMask | targetMask);
+
+                foreach (var hit in hits)
                 {
-                    // Check for Hiding mechanic
-                    Movement charMovement = targetObject.GetComponent<Movement>();
-                    bool visible = true;
-                    if (charMovement != null)
+                    // If we hit a Wall (Obstacle) first, the view is blocked. Stop looking at this target.
+                    if (((1 << hit.collider.gameObject.layer) & obstacleMask) != 0)
                     {
-                        visible = !charMovement.isHiding;
+                        break;
                     }
 
-                    if (visible)
+                    // If we hit the Player, check if they are hiding
+                    if (((1 << hit.collider.gameObject.layer) & targetMask) != 0)
                     {
-                        ModularReset(targetObject);
+                        Movement charMovement = target.GetComponent<Movement>();
+                        if (charMovement == null || !charMovement.isHiding)
+                        {
+                            visibleTargets.Add(target);
+                            if (LevelManager.Instance != null)
+                            {
+                                LevelManager.Instance.ResetCurrentRoom();
+                            }
+                        }
+                        break; // Found the player, no need to check further hits for this ray
                     }
                 }
             }
         }
     }
 
-    // TELEPORT LOGIC: Moves player to the start of the current modular room
-    void ModularReset(GameObject player)
-    {
-        Debug.Log("Caught! Teleporting to room entrance...");
-
-        // Find the spawn point that exists within the current active room prefab
-        GameObject spawn = GameObject.Find("EntranceSpawnPoint");
-
-        if (spawn != null)
-        {
-            player.transform.position = spawn.transform.position;
-        }
-        else
-        {
-            Debug.LogWarning("No GameObject named 'EntranceSpawnPoint' found in the scene!");
-        }
-
-        // Optional: Add a screen fade or sound effect here
-    }
-
-    #region View Cone Rendering logic
+    // --- MESH GENERATION ---
     void DrawFieldOfView()
     {
         int rayCount = Mathf.RoundToInt(viewAngle * meshResolution);
         float stepAngleSize = viewAngle / rayCount;
         List<Vector3> viewPoints = new List<Vector3>();
         ViewCastInfo oldViewCast = new ViewCastInfo();
-
         for (int i = 0; i <= rayCount; i++)
         {
             float angle = fovRotation - viewAngle / 2 + stepAngleSize * i;
             ViewCastInfo newViewCast = ViewCast(angle);
-
             if (i > 0)
             {
-                bool edgeDstThresholdExceeded = Mathf.Abs(oldViewCast.dst - newViewCast.dst) > edgeDstThreshold;
-                if (oldViewCast.hit != newViewCast.hit || (oldViewCast.hit && newViewCast.hit && edgeDstThresholdExceeded))
+                if (oldViewCast.hit != newViewCast.hit)
                 {
                     EdgeInfo edge = FindEdge(oldViewCast, newViewCast);
                     if (edge.pointA != Vector3.zero) viewPoints.Add(edge.pointA);
@@ -133,11 +114,9 @@ public class EnemyScript : MonoBehaviour
             viewPoints.Add(newViewCast.point);
             oldViewCast = newViewCast;
         }
-
         int vertexCount = viewPoints.Count + 1;
         Vector3[] vertices = new Vector3[vertexCount];
         int[] triangles = new int[(vertexCount - 2) * 3];
-
         vertices[0] = Vector3.zero;
         for (int i = 0; i < vertexCount - 1; i++)
         {
@@ -149,7 +128,6 @@ public class EnemyScript : MonoBehaviour
                 triangles[i * 3 + 2] = i + 2;
             }
         }
-
         viewMesh.Clear();
         viewMesh.vertices = vertices;
         viewMesh.triangles = triangles;
@@ -162,22 +140,12 @@ public class EnemyScript : MonoBehaviour
         float maxAngle = maxViewCast.angle;
         Vector3 minPoint = Vector3.zero;
         Vector3 maxPoint = Vector3.zero;
-
         for (int i = 0; i < edgeResolveIterations; i++)
         {
             float angle = (minAngle + maxAngle) / 2;
             ViewCastInfo newViewCast = ViewCast(angle);
-            bool edgeDstThresholdExceeded = Mathf.Abs(minViewCast.dst - newViewCast.dst) > edgeDstThreshold;
-            if (newViewCast.hit == minViewCast.hit && !edgeDstThresholdExceeded)
-            {
-                minAngle = angle;
-                minPoint = newViewCast.point;
-            }
-            else
-            {
-                maxAngle = angle;
-                maxPoint = newViewCast.point;
-            }
+            if (newViewCast.hit == minViewCast.hit) { minAngle = angle; minPoint = newViewCast.point; }
+            else { maxAngle = angle; maxPoint = newViewCast.point; }
         }
         return new EdgeInfo(minPoint, maxPoint);
     }
@@ -201,11 +169,9 @@ public class EnemyScript : MonoBehaviour
         public bool hit; public Vector3 point; public float dst; public float angle;
         public ViewCastInfo(bool _hit, Vector3 _point, float _dst, float _angle) { hit = _hit; point = _point; dst = _dst; angle = _angle; }
     }
-
     public struct EdgeInfo
     {
         public Vector3 pointA; public Vector3 pointB;
         public EdgeInfo(Vector3 _pointA, Vector3 _pointB) { pointA = _pointA; pointB = _pointB; }
     }
-    #endregion
 }

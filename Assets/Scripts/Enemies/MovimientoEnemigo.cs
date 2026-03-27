@@ -1,16 +1,10 @@
-/* * HOW TO USE:
- * 1. Create two Empty GameObjects as children of your Enemy (PointA and PointB).
- * 2. Drag them into the 'Point A' and 'Point B' slots in the Inspector.
- * 3. Set 'Speed' for movement and 'Wait Time' for the pause duration at each point.
- */
-
 using UnityEngine;
 
 public class MovimientoEnemigo : MonoBehaviour
 {
     #region Public Variables
     public float speed;
-    public float waitTime = 1.0f; // Seconds to wait at each point
+    public float waitTime = 1.0f;
     public Transform pointA;
     public Transform pointB;
     #endregion
@@ -28,7 +22,6 @@ public class MovimientoEnemigo : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         enemyScript = GetComponent<EnemyScript>();
 
-        // Start by moving towards Point B
         currentTarget = pointB;
         UpdateFacing();
     }
@@ -49,15 +42,12 @@ public class MovimientoEnemigo : MonoBehaviour
 
     void Move()
     {
-        // Move towards the current target
         transform.position = Vector2.MoveTowards(transform.position, currentTarget.position, speed * Time.deltaTime);
 
-        // Check if we have reached the target
         if (Vector2.Distance(transform.position, currentTarget.position) < 0.1f)
         {
             isWaiting = true;
             waitTimer = waitTime;
-            // Note: We don't flip yet; we flip AFTER the wait is over.
         }
     }
 
@@ -68,30 +58,26 @@ public class MovimientoEnemigo : MonoBehaviour
         if (waitTimer <= 0)
         {
             isWaiting = false;
-
-            // Switch targets
             currentTarget = (currentTarget == pointB) ? pointA : pointB;
-
-            // Flip the sprite and view cone now that we are moving again
             UpdateFacing();
         }
     }
 
     public void UpdateFacing()
     {
-        // Determine direction based on target position relative to enemy
-        bool goingLeft = currentTarget.position.x < transform.position.x;
+        // If currentTarget.x is greater than my x, I am going RIGHT
+        bool goingRight = currentTarget.position.x > transform.position.x;
 
-        spriteRenderer.flipX = goingLeft;
+        // Flip the sprite (assuming your sprite faces right by default)
+        spriteRenderer.flipX = !goingRight;
 
         if (enemyScript != null)
         {
-            // If flipping X, point cone left (270), else point right (90)
-            enemyScript.fovRotation = goingLeft ? 270f : 90f;
+            // 90 is Right, 270 is Left
+            enemyScript.fovRotation = goingRight ? 90f : 270f;
         }
     }
 
-    // Visualizes the patrol path in the Scene view
     private void OnDrawGizmos()
     {
         if (pointA != null && pointB != null)

@@ -20,9 +20,9 @@
  * * --- PART 3: MODE 1 - CHARACTER MODE (DDLC Style) ---
  * 1. Ensure 'Is Sign Mode' is UNCHECKED.
  * 2. In 'Dialogue Sequence', add an element:
- * - Character Name: Type the name (e.g., "Monika").
+ * - Character Name: Type the name (e.g., "Agnes").
  * - Text: Type what they say.
- * - Character Portrait: Drag in an expression sprite (e.g., 'Monika_Happy').
+ * - Character Portrait: Drag in an expression sprite (e.g., 'Agnes_Happy').
  * - Background Override: (Optional) Drag a room sprite to change the scene mid-chat.
  * - Line Speed: Set to 0.08 for natural talking.
  * 

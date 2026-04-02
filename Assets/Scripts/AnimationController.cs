@@ -1,40 +1,42 @@
 using UnityEngine;
 
-public class AnimationController : Movement
+public class AnimationController : MonoBehaviour // Changed from Movement to MonoBehaviour
 {
-    public Animator _anim;
+    private Animator _anim;
+    private Movement _plymov;
+    private Rigidbody2D _rb;
 
     void Start()
     {
         _anim = GetComponent<Animator>();
+        _plymov = GetComponent<Movement>();
+        _rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        _anim.SetBool("Ground", _grounded);
-        _anim.SetBool("Water", usingWaterMagic);
-        _anim.SetBool("Wind", usingWindMagic);
-        _anim.SetBool("Fire", usingFireMagic);
-        if (_grounded){
-            if ((_rb.linearVelocity.x > 2f || _rb.linearVelocity.x < -2f))
-            {
-                _anim.SetBool("Walk", true);
-            }
-            else
-            {
-                _anim.SetBool("Walk", false);
-            }
+        if (_plymov == null) return;
+
+        // Sync booleans from the actual Movement script
+        _anim.SetBool("Ground", _plymov.isGrounded());
+        _anim.SetBool("Water", _plymov.usingWaterMagic);
+        _anim.SetBool("Wind", _plymov.usingWindMagic);
+        _anim.SetBool("Fire", _plymov.usingFireMagic);
+
+        if (_plymov.isGrounded())
+        {
+            // Reset jump state when hitting floor
+            _anim.SetBool("Jump", false);
+
+            // Check horizontal velocity for walk animation
+            bool isWalking = Mathf.Abs(_rb.linearVelocity.x) > 0.1f;
+            _anim.SetBool("Walk", isWalking);
         }
         else
         {
-            if (_rb.linearVelocity.y > 0f){
-                _anim.SetBool("Jump", true);
-            }else  {
-                _anim.SetBool("Ground", true);
-                _anim.SetBool("Jump", false);
-            }
+            // Only trigger Jump animation if moving upwards
+            _anim.SetBool("Jump", _rb.linearVelocity.y > 0.1f);
+            _anim.SetBool("Walk", false);
         }
-
     }
 }

@@ -492,6 +492,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7692799575789786184, guid: 5ecf988ada556364594d39a3b43bdeeb, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 3464648702522010578}
+    - targetCorrespondingSourceObject: {fileID: 7692799575789786184, guid: 5ecf988ada556364594d39a3b43bdeeb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3464648702522010567}
   m_SourcePrefab: {fileID: 100100000, guid: 5ecf988ada556364594d39a3b43bdeeb, type: 3}
@@ -538,7 +541,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.2666667, y: 2.5333333}
+    oldSize: {x: 1.4, y: 2.5333333}
     newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -551,6 +554,18 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4774095199135769977, guid: 5ecf988ada556364594d39a3b43bdeeb, type: 3}
   m_PrefabInstance: {fileID: 751676555025893212}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3464648702522010578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3464648702522010558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0e7c43ed30d20a448f8455ab6d53406, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

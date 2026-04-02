@@ -4,20 +4,18 @@ using UnityEngine;
 public class WaterMagic : MonoBehaviour
 {
     [SerializeField] private ScriptableStats _stats;
-    private Movement plymov = null;
+    private Movement plymov;
     public Rigidbody2D agnes;
     public bool DashUsed = false;
 
-    public Vector2 WaterDashForce;
+    // Set this to 40 in the Inspector
+    public float dashPower = 40f;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         plymov = GetComponent<Movement>();
     }
 
-
-    // Update is called once per frame
     void Update()
     {
         WaterDash();
@@ -26,31 +24,34 @@ public class WaterMagic : MonoBehaviour
 
     void WaterDash()
     {
-        if (Input.GetKeyDown(KeyCode.V) && DashUsed == false)
+        if (Input.GetKeyDown(KeyCode.V) && !DashUsed)
         {
-            //water magic stuff
-            WaterDashForce.x *= plymov.ReturnDirection();
-            agnes.constraints = RigidbodyConstraints2D.FreezePositionY;
-            plymov.SetFrameVelocity(WaterDashForce);
             DashUsed = true;
             plymov.usingWaterMagic = true;
-            //disable the fire magic thingies
+            plymov.usingFireMagic = false;
+
+            // Calculate direction and apply force
+            float dir = plymov.ReturnDirection();
+            Vector2 force = new Vector2(dashPower * dir, 0);
+
+            agnes.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+            plymov.SetFrameVelocity(force);
+
             _stats.MaxFallSpeed = 40;
             _stats.FallAcceleration = 80;
-            plymov.usingFireMagic = false;
-            //wait for dash to end
-            StartCoroutine(WaitForSeconds());
+
+            StartCoroutine(DashRoutine(dir));
         }
-       
     }
 
-    IEnumerator WaitForSeconds()
+    IEnumerator DashRoutine(float direction)
     {
         yield return new WaitForSecondsRealtime(0.2f);
-        plymov.SetFrameVelocity(-WaterDashForce/3);
-        WaterDashForce.x = 40;
-        agnes.constraints = RigidbodyConstraints2D.None;
+
+        // Apply a small counter-force to stop the dash momentum
+        plymov.SetFrameVelocity(new Vector2(-(dashPower / 3) * direction, 0));
+
+        agnes.constraints = RigidbodyConstraints2D.FreezeRotation;
         plymov.usingWaterMagic = false;
     }
-
 }

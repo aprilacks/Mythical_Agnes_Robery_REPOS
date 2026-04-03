@@ -11,8 +11,26 @@ public class ScriptedSpawn : MonoBehaviour
     private bool guardSpawned = true;
     private MovimientoEnemigo movEnemy;
 
+    private void OnEnable()
+    {
+        // If this script is inside a Room Prefab, it will reset every time 
+        // the Room is instantiated by the LevelManager.
+        ResetSpawner();
+    }
+
+    // Call this if you want to manually reset the encounter
+    public void ResetSpawner()
+    {
+        if (clone != null)
+        {
+            Destroy(clone);
+        }
+        guardSpawned = true;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Only spawn if we haven't spawned this 'life' and it's the Player
         if (guardSpawned && collision.CompareTag("Player"))
         {
             guardSpawned = false;
@@ -27,6 +45,7 @@ public class ScriptedSpawn : MonoBehaviour
 
         if (movEnemy != null)
         {
+            // Create target points
             GameObject pA = new GameObject("Scripted_PointA");
             GameObject pB = new GameObject("Scripted_PointB");
 
@@ -37,10 +56,18 @@ public class ScriptedSpawn : MonoBehaviour
             movEnemy.pointB = pB.transform;
             movEnemy.speed = enemySpeed;
 
+            // Parent them to the clone so they get destroyed when the clone is destroyed
             pA.transform.SetParent(clone.transform);
             pB.transform.SetParent(clone.transform);
         }
 
+        // Standard cleanup after X seconds
         Destroy(clone, despawnTime);
+    }
+
+    private void OnDestroy()
+    {
+        // Cleanup if the trigger itself is destroyed (room change)
+        if (clone != null) Destroy(clone);
     }
 }

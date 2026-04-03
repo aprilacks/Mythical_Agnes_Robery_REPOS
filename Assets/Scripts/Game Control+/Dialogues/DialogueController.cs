@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 [System.Serializable]
 public class DialogueLine
@@ -13,7 +14,7 @@ public class DialogueLine
     public string text;
     public Sprite characterPortrait;
     public Sprite backgroundOverride;
-    public bool triggersLevelTransition; // Now functional
+    public bool triggersLevelTransition;
     public float lineSpeed = 0.08f;
 }
 
@@ -27,7 +28,7 @@ public class DialogueController : MonoBehaviour
 
     [Header("Transition Settings")]
     public TransitionType transitionType = TransitionType.LoadSpecificScene;
-    public string sceneToLoad; // Name of the scene to load if using LoadSpecificScene
+    public string sceneToLoad;
 
     [Header("Input Locking")]
     [HideInInspector] public Movement playerMovementScript;
@@ -65,9 +66,14 @@ public class DialogueController : MonoBehaviour
 
     void Update()
     {
+        if (playerMovementScript == null) return;
+
+        // Get the Interact action from the PlayerInput component on the player
+        var interactAction = playerMovementScript.GetComponent<PlayerInput>().actions["Interact"];
+
         if (isDialogueActive)
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (interactAction.WasPressedThisFrame())
             {
                 if (isTyping) FinishLineInstantly();
                 else AdvanceOrEnd();
@@ -75,7 +81,7 @@ public class DialogueController : MonoBehaviour
             return;
         }
 
-        if (isPlayerInRange && Input.GetKeyDown(KeyCode.E) && !playOnEnter)
+        if (isPlayerInRange && interactAction.WasPressedThisFrame() && !playOnEnter)
         {
             StartDialogueSequence();
         }
@@ -104,7 +110,6 @@ public class DialogueController : MonoBehaviour
         }
         else
         {
-            // Check the last line's transition bool
             bool shouldTransition = dialogueSequence[index].triggersLevelTransition;
             StartCoroutine(EndDialogueSequence(shouldTransition));
         }
@@ -203,16 +208,6 @@ public class DialogueController : MonoBehaviour
             {
                 SceneManager.LoadScene(sceneToLoad);
             }
-            else
-            {
-                Debug.LogWarning("DialogueController: SceneToLoad is empty!");
-            }
-        }
-        else if (transitionType == TransitionType.LoadNextRoomPrefab)
-        {
-            // If you have a LevelManager that handles prefab loading:
-            // LevelManager.Instance.LoadNextRoom();
-            Debug.Log("DialogueController: LoadNextRoomPrefab triggered (add your custom manager logic here).");
         }
     }
 
@@ -230,7 +225,6 @@ public class DialogueController : MonoBehaviour
                 if (!state)
                 {
                     playerMovementScript._rb.linearVelocity = Vector2.zero;
-                    playerMovementScript._rb.angularVelocity = 0f;
                     playerMovementScript._rb.constraints = RigidbodyConstraints2D.FreezeAll;
                 }
                 else

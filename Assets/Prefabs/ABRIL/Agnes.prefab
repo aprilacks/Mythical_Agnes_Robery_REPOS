@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2647604283110112621}
   - component: {fileID: 7739948011782452760}
+  - component: {fileID: 401658208811300810}
   - component: {fileID: 4311021707632148132}
   - component: {fileID: 6568777844015200686}
   - component: {fileID: 6131330060222661740}
@@ -55,6 +56,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0e7c43ed30d20a448f8455ab6d53406, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &401658208811300810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919005749354704414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03e05bfae1508194a9f7f811c6f7ac6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireMagic: {fileID: 6131330060222661740}
+  waterMagic: {fileID: 9002151512141668640}
+  windMagic: {fileID: 6568777844015200686}
+  electricMagic: {fileID: 3812209699909262866}
 --- !u!114 &4311021707632148132
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,6 +11,10 @@ public class WindMagic : MonoBehaviour
     public float fallspeed;
     public float slowmo;
 
+    // Memory variable to track if we should turn Fire back on
+    private bool _fireWasEnabledBeforeGliding;
+    private bool _isGliding;
+
     void Start()
     {
         plymov = GetComponent<Movement>();
@@ -25,7 +29,17 @@ public class WindMagic : MonoBehaviour
         {
             if (_input.actions["Wind"].IsPressed())
             {
+                // If we JUST started gliding this frame
+                if (!_isGliding)
+                {
+                    // Store the current state of FireMagic before we mess with it
+                    _fireWasEnabledBeforeGliding = fireExtinguisher.enabled;
+                    _isGliding = true;
+                }
+
                 _stats.MaxFallSpeed = fallspeed;
+
+                // Temporarily disable Fire to prevent physics conflicts
                 fireExtinguisher.enabled = false;
                 plymov.usingFireMagic = false;
                 plymov.usingWindMagic = true;
@@ -35,16 +49,25 @@ public class WindMagic : MonoBehaviour
             }
             else
             {
-                ResetStats();
+                StopGliding();
             }
         }
-        else { ResetStats(); }
+        else
+        {
+            StopGliding();
+        }
     }
 
-    void ResetStats()
+    void StopGliding()
     {
+        if (_isGliding)
+        {
+            // Restore FireMagic to exactly what it was before we started
+            fireExtinguisher.enabled = _fireWasEnabledBeforeGliding;
+            _isGliding = false;
+        }
+
         _stats.MaxFallSpeed = 40;
-        fireExtinguisher.enabled = true;
         plymov.usingWindMagic = false;
         _stats.MaxSpeed = 14;
     }

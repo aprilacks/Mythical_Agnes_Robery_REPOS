@@ -18,7 +18,9 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
-        if(PlayerPrefs.HasKey("musicVolume"))
+        _Main.enabled = true;
+        _Options.enabled = false;
+        if (PlayerPrefs.HasKey("musicVolume"))
         {
             LoadVolume();
         }
@@ -27,8 +29,6 @@ public class MainMenu : MonoBehaviour
             SetMusicVolume();
         }
             SetMusicVolume();
-        _Main.enabled = true;
-        _Options.enabled = false;
     }
 
     // MUSIC

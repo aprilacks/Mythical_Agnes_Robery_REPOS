@@ -19,9 +19,14 @@ public class PuzzleTrigger : MonoBehaviour
 
     private Animator animator;
 
+    [Header("Audio")]
+    [SerializeField] AudioClip _leverSFX;
+    [SerializeField] AudioSource _leverSFXSource;
+
     private void Start()
     {
         animator = GetComponent<Animator>();
+        _leverSFXSource.clip = _leverSFX;
     }
 
     private void Update()
@@ -59,6 +64,7 @@ public class PuzzleTrigger : MonoBehaviour
         isPulled = true;
         SendSignals();
         animator.SetBool("IsPulled", true);
+        _leverSFXSource.Play();
 
         // Visual feedback
         if (TryGetComponent<SpriteRenderer>(out var sr))

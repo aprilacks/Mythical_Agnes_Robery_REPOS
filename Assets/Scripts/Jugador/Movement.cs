@@ -3,13 +3,20 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D), typeof(PlayerInput))]
+[RequireComponent(typeof(AudioSource))]
 public class Movement : MonoBehaviour, IPlayerController
 {
     [SerializeField] private ScriptableStats _stats;
-    private PlayerInput _playerInput;
-    private InputAction _moveAction;
-    private InputAction _jumpAction;
 
+    [Header("Master Audio Clips")]
+    [SerializeField] private AudioClip _walkClip;
+    [SerializeField] private AudioClip _windGlideClip;
+    [SerializeField] private AudioClip _fireCannonballClip;
+    [SerializeField] private AudioClip _waterDashClip;
+    [SerializeField][Range(0, 1)] private float _masterVolume = 0.5f;
+
+    private PlayerInput _input;
+    private AudioSource _audioSource;
     [HideInInspector] public Rigidbody2D _rb;
     private CapsuleCollider2D _col;
     private FrameInput _frameInput;
@@ -17,192 +24,152 @@ public class Movement : MonoBehaviour, IPlayerController
     private bool _cachedQueryStartInColliders;
     private Quaternion noRotate = Quaternion.identity;
 
-    // --- State & Lag Buffering ---
-    public bool isHiding = false;
+    [Header("Magic States")]
     public bool usingFireMagic = false;
     public bool usingWindMagic = false;
     public bool usingWaterMagic = false;
+    public bool isHiding = false;
 
-    [Header("Grounding Detection")]
+    [Header("Grounding")]
     public bool _grounded;
     private float _lastGroundedTime;
-    [SerializeField] private float _groundedGracePeriod = 0.05f; // Prevents flickering during lag
+    [SerializeField] private float _groundedGracePeriod = 0.05f;
 
     public Vector2 FrameInput => _frameInput.Move;
     public event Action<bool, float> GroundedChanged;
     public event Action Jumped;
 
-    private float _time;
-
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
         _col = GetComponent<CapsuleCollider2D>();
-        _playerInput = GetComponent<PlayerInput>();
+        _input = GetComponent<PlayerInput>();
+        _audioSource = GetComponent<AudioSource>();
 
-        _moveAction = _playerInput.actions["Move"];
-        _jumpAction = _playerInput.actions["Jump"];
-
+        _audioSource.playOnAwake = false;
+        _audioSource.volume = _masterVolume;
         _cachedQueryStartInColliders = Physics2D.queriesStartInColliders;
-
-        // Internal Physics Setup for Stability
-        _rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-        _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
     }
 
     private void Update()
     {
-        _time += Time.deltaTime;
         GatherInput();
+        HandleMasterAudio();
         transform.rotation = noRotate;
+    }
+
+    public void PlayDashSound()
+    {
+        if (_waterDashClip != null)
+        {
+            // We use PlayOneShot so it doesn't overwrite the 'clip' variable used for loops
+            _audioSource.PlayOneShot(_waterDashClip, _masterVolume);
+        }
+    }
+
+    private void HandleMasterAudio()
+    {
+        AudioClip desiredLoop = null;
+
+        // 1. Determine which LOOPING sound should be active
+        if (usingWindMagic)
+        {
+            desiredLoop = _windGlideClip;
+        }
+        else if (usingFireMagic)
+        {
+            desiredLoop = _fireCannonballClip;
+        }
+        else if (_grounded && Mathf.Abs(_rb.linearVelocity.x) > 0.5f && !isHiding)
+        {
+            desiredLoop = _walkClip;
+        }
+
+        // 2. Handle Looping Logic
+        if (desiredLoop != null)
+        {
+            // If we are switching loops or starting a new one
+            if (_audioSource.clip != desiredLoop || !_audioSource.isPlaying)
+            {
+                _audioSource.clip = desiredLoop;
+                _audioSource.loop = true;
+                _audioSource.Play();
+            }
+        }
+        else
+        {
+            // IMPORTANT FIX: 
+            // Only stop if we are currently playing a LOOP. 
+            // If a OneShot (Dash) is playing, clip stays null or old, but isPlaying is true.
+            // We check if the current playing sound is marked as a loop.
+            if (_audioSource.isPlaying && _audioSource.loop)
+            {
+                _audioSource.Stop();
+                _audioSource.loop = false; // Reset loop flag
+            }
+        }
     }
 
     private void GatherInput()
     {
         _frameInput = new FrameInput
         {
-            JumpDown = _jumpAction.WasPressedThisFrame(),
-            JumpHeld = _jumpAction.IsPressed(),
-            Move = _moveAction.ReadValue<Vector2>()
+            JumpDown = _input.actions["Jump"].WasPressedThisFrame(),
+            Move = _input.actions["Move"].ReadValue<Vector2>()
         };
-
-        if (_stats.SnapInput)
-        {
-            _frameInput.Move.x = Mathf.Abs(_frameInput.Move.x) < _stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_frameInput.Move.x);
-            _frameInput.Move.y = Mathf.Abs(_frameInput.Move.y) < _stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_frameInput.Move.y);
-        }
-
-        if (_frameInput.JumpDown)
-        {
-            _jumpToConsume = true;
-            _timeJumpWasPressed = _time;
-        }
+        if (_frameInput.JumpDown) _jumpToConsume = true;
     }
 
     private void FixedUpdate()
     {
-        if (isHiding)
-        {
-            _frameVelocity = Vector2.zero;
-            _rb.linearVelocity = Vector2.zero;
-            return;
-        }
-
+        if (isHiding) { _rb.linearVelocity = Vector2.zero; return; }
         CheckCollisions();
         HandleJump();
         HandleDirection();
         HandleGravity();
-        ApplyMovement();
-    }
-
-    #region Collisions
-    private float _frameLeftGrounded = float.MinValue;
-
-    public bool isGrounded() => _grounded;
-    public bool isFalling() => !_grounded && _rb.linearVelocity.y < -0.1f;
-
-    public void SetFrameVelocity(Vector2 velocity) => _frameVelocity += velocity;
-
-    private float _facing = 1f;
-    public float ReturnDirection()
-    {
-        if (_frameInput.Move.x != 0) _facing = Mathf.Sign(_frameInput.Move.x);
-        return _facing;
+        _rb.linearVelocity = _frameVelocity;
     }
 
     private void CheckCollisions()
     {
         Physics2D.queriesStartInColliders = false;
-
-        // Shrink the cast slightly horizontally to avoid getting stuck on wall corners
         Vector2 castSize = new Vector2(_col.size.x * 0.9f, _col.size.y);
+        bool groundHit = Physics2D.CapsuleCast(_col.bounds.center, castSize, _col.direction, 0, Vector2.down, _stats.GrounderDistance, ~_stats.PlayerLayer);
 
-        bool groundHit = Physics2D.CapsuleCast(
-            _col.bounds.center,
-            castSize,
-            _col.direction,
-            0,
-            Vector2.down,
-            _stats.GrounderDistance,
-            ~_stats.PlayerLayer
-        );
-
-        bool ceilingHit = Physics2D.CapsuleCast(
-            _col.bounds.center,
-            castSize,
-            _col.direction,
-            0,
-            Vector2.up,
-            _stats.GrounderDistance,
-            ~_stats.PlayerLayer
-        );
-
-        if (ceilingHit) _frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
-
-        // --- Grounded Logic with Lag Buffer ---
         if (groundHit)
         {
             if (!_grounded)
             {
                 _grounded = true;
-                _coyoteUsable = true;
-                _bufferedJumpUsable = true;
-                _endedJumpEarly = false;
-                GroundedChanged?.Invoke(true, Mathf.Abs(_frameVelocity.y));
+                GroundedChanged?.Invoke(true, Mathf.Abs(_rb.linearVelocity.y));
             }
-            _lastGroundedTime = _time;
+            _lastGroundedTime = Time.time;
         }
-        else
+        else if (_grounded && Time.time > _lastGroundedTime + _groundedGracePeriod)
         {
-            // Only un-ground if we've been away from the floor longer than the grace period
-            if (_grounded && _time > _lastGroundedTime + _groundedGracePeriod)
-            {
-                _grounded = false;
-                _frameLeftGrounded = _time;
-                GroundedChanged?.Invoke(false, 0);
-            }
+            _grounded = false;
+            GroundedChanged?.Invoke(false, 0);
         }
-
         Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
     }
-    #endregion
 
-    #region Jumping logic
     private bool _jumpToConsume;
-    private bool _bufferedJumpUsable;
-    private bool _endedJumpEarly;
-    private bool _coyoteUsable;
-    private float _timeJumpWasPressed;
-
-    private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + _stats.JumpBuffer;
-    private bool CanUseCoyote => _coyoteUsable && !_grounded && _time < _frameLeftGrounded + _stats.CoyoteTime;
-
     private void HandleJump()
     {
-        if (!_endedJumpEarly && !_grounded && !_frameInput.JumpHeld && _rb.linearVelocity.y > 0) _endedJumpEarly = true;
-        if (!_jumpToConsume && !HasBufferedJump) return;
-        if (_grounded || CanUseCoyote) ExecuteJump();
-        _jumpToConsume = false;
+        if (_jumpToConsume && _grounded)
+        {
+            _frameVelocity.y = _stats.JumpPower;
+            _jumpToConsume = false;
+            Jumped?.Invoke();
+        }
     }
 
-    private void ExecuteJump()
-    {
-        _endedJumpEarly = false;
-        _timeJumpWasPressed = 0;
-        _bufferedJumpUsable = false;
-        _coyoteUsable = false;
-        _frameVelocity.y = _stats.JumpPower;
-        Jumped?.Invoke();
-    }
-    #endregion
-
-    #region Physics
     private void HandleDirection()
     {
         if (_frameInput.Move.x == 0)
         {
-            var deceleration = _grounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
-            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
+            var decel = _grounded ? _stats.GroundDeceleration : _stats.AirDeceleration;
+            _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, decel * Time.fixedDeltaTime);
         }
         else
         {
@@ -212,33 +179,14 @@ public class Movement : MonoBehaviour, IPlayerController
 
     private void HandleGravity()
     {
-        if (_grounded)
-        {
-            // Vertical stability on ground
-            if (_frameVelocity.y < 0) _frameVelocity.y = 0f;
-        }
-        else
-        {
-            var inAirGravity = _stats.FallAcceleration;
-            if (_endedJumpEarly && _frameVelocity.y > 0) inAirGravity *= _stats.JumpEndEarlyGravityModifier;
-            _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -_stats.MaxFallSpeed, inAirGravity * Time.fixedDeltaTime);
-        }
+        if (_grounded && _frameVelocity.y < 0) _frameVelocity.y = 0f;
+        else _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -_stats.MaxFallSpeed, _stats.FallAcceleration * Time.fixedDeltaTime);
     }
 
-    private void ApplyMovement() => _rb.linearVelocity = _frameVelocity;
-    #endregion
+    public void SetFrameVelocity(Vector2 velocity) => _frameVelocity = velocity;
+    public float ReturnDirection() => Mathf.Sign(transform.localScale.x);
+    public bool isGrounded() => _grounded;
 }
 
-public struct FrameInput
-    {
-        public bool JumpDown;
-        public bool JumpHeld;
-        public Vector2 Move;
-    }
-
-    public interface IPlayerController
-    {
-        public event Action<bool, float> GroundedChanged;
-        public event Action Jumped;
-        public Vector2 FrameInput { get; }
-    }
+public struct FrameInput { public bool JumpDown; public Vector2 Move; }
+public interface IPlayerController { public event Action<bool, float> GroundedChanged; public event Action Jumped; public Vector2 FrameInput { get; } }

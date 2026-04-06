@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 6968409263320777830}
   - component: {fileID: 1042371118783791675}
   - component: {fileID: 4995635072813110937}
+  - component: {fileID: 5444448013393030222}
   m_Layer: 6
   m_Name: Agnes
   m_TagString: Player
@@ -85,12 +86,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stats: {fileID: 11400000, guid: 94db11c9bf88a66478a24044ea3ab134, type: 2}
+  _walkClip: {fileID: 8300000, guid: 794ce2a6b32933a4cb7dc6e91feb9ce7, type: 3}
+  _windGlideClip: {fileID: 8300000, guid: fe2c68cc691631b4bb5505ff9957c9a2, type: 3}
+  _fireCannonballClip: {fileID: 8300000, guid: 459cab39cf8f22844914b3741b607686, type: 3}
+  _waterDashClip: {fileID: 8300000, guid: 8ef4b5ad89ed8fc46a5de5cbdf2f19ff, type: 3}
+  _masterVolume: 0.5
   _rb: {fileID: 0}
-  isHiding: 0
   usingFireMagic: 0
   usingWindMagic: 0
   usingWaterMagic: 0
+  isHiding: 0
   _grounded: 0
+  _groundedGracePeriod: 0.05
 --- !u!114 &6568777844015200686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,6 +128,7 @@ MonoBehaviour:
   _stats: {fileID: 11400000, guid: 94db11c9bf88a66478a24044ea3ab134, type: 2}
   CannonSpeed: 60
   CannonAcceleration: 420
+  _impactClip: {fileID: 8300000, guid: 459cab39cf8f22844914b3741b607686, type: 3}
 --- !u!114 &9002151512141668640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,14 +136,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919005749354704414}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce338e73365c3aa419e7af67d55040e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agnes: {fileID: 7482675276300028962}
-  DashUsed: 0
   dashPower: 40
+  DashUsed: 0
 --- !u!114 &3812209699909262866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -317,8 +324,8 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: 
+  m_DefaultControlScheme: Keyboard&Mouse
+  m_DefaultActionMap: df70fa95-8a34-4494-b137-73ab6b9c7d37
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!61 &4995635072813110937
@@ -367,3 +374,100 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 2}
   m_EdgeRadius: 0
+--- !u!82 &5444448013393030222
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919005749354704414}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

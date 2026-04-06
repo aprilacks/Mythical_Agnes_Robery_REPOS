@@ -239,6 +239,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4311021707632148132, guid: 7edaab90908dde641882d2487fa112fa, type: 3}
+      propertyPath: _waterDashClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 8ef4b5ad89ed8fc46a5de5cbdf2f19ff, type: 3}
+    - target: {fileID: 4311021707632148132, guid: 7edaab90908dde641882d2487fa112fa, type: 3}
+      propertyPath: _windGlideClip
+      value: 
+      objectReference: {fileID: 8300000, guid: fe2c68cc691631b4bb5505ff9957c9a2, type: 3}
+    - target: {fileID: 4311021707632148132, guid: 7edaab90908dde641882d2487fa112fa, type: 3}
+      propertyPath: _fireCannonballClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 459cab39cf8f22844914b3741b607686, type: 3}
     - target: {fileID: 9002151512141668640, guid: 7edaab90908dde641882d2487fa112fa, type: 3}
       propertyPath: m_Enabled
       value: 0

@@ -88929,6 +88929,10 @@ PrefabInstance:
       propertyPath: startAngle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1267500544434518074, guid: bacac946b0a7c534ca65b16ce9558f01, type: 3}
+      propertyPath: rotateSpriteWithCone
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3005296514162203561, guid: bacac946b0a7c534ca65b16ce9558f01, type: 3}
       propertyPath: m_Name
       value: Guard
@@ -89041,11 +89045,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6304450348460986780, guid: 47f8935fd830d224cb358d856afb45f7, type: 3}
       propertyPath: fovRotation
-      value: 250
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522548298428759372, guid: 47f8935fd830d224cb358d856afb45f7, type: 3}
       propertyPath: endAngle
-      value: 0
+      value: -150
       objectReference: {fileID: 0}
     - target: {fileID: 8522548298428759372, guid: 47f8935fd830d224cb358d856afb45f7, type: 3}
       propertyPath: pauseTime
@@ -89053,7 +89057,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8522548298428759372, guid: 47f8935fd830d224cb358d856afb45f7, type: 3}
       propertyPath: startAngle
-      value: 250
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8522548298428759372, guid: 47f8935fd830d224cb358d856afb45f7, type: 3}
       propertyPath: rotationSpeed
